@@ -8,4 +8,4 @@ jobs:
     steps:
       - name: Welcome Message
         run: |
-          echo "Welcome ${{USER}}"
+          echo "Welcome $USER"
