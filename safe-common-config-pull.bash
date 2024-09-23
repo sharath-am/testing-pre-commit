@@ -16,8 +16,8 @@ usage() {
 # Mapping of file types to URLs (version placeholders)
 FILE_TYPES=("pre-commit-config" "eslint")
 FILE_URLS=(
-    "https://raw.githubusercontent.com/sharath-am/testing-pre-commit/<version>/pre-commit-config/go/.pre-commit-config.yaml"
-    "https://raw.githubusercontent.com/sharath-am/testing-pre-commit/refs/heads/<version>/eslint/.eslint.yaml"
+    "https://raw.githubusercontent.com/sharath-am/testing-pre-commit/refs/heads/<version>/go/.pre-commit-config.yaml"
+    "https://raw.githubusercontent.com/sharath-am/testing-pre-commit/refs/heads/<version>/go/.eslint.yaml"
 )
 
 # Function to get URL by file type
