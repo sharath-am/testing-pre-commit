@@ -27,7 +27,7 @@ CONFIG_FILE=$2       # Config file name (e.g., pre-commit-config.yaml, golint.ya
 GIT_VERSION=${3:-main}  # Default Git version to "main" if not provided
 
 # GitHub repository containing the config files (replace with your actual repo)
-REPO_URL="https://raw.githubusercontent.com/your-username/your-config-repo/$GIT_VERSION"
+REPO_URL="REPO_URL="https://raw.githubusercontent.com/sharath-am/testing-pre-commit/refs/heads/$GIT_VERSION"
 
 # Construct the path based on parameters
 CONFIG_PATH="$LANGUAGE/$CONFIG_FILE"
