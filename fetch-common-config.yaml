@@ -27,7 +27,7 @@ CONFIG_FILE=$2       # Config file name (e.g., pre-commit-config.yaml, golint.ya
 GIT_VERSION=${3:-main}  # Default Git version to "main" if not provided
 
 # GitHub repository containing the config files (replace with your actual repo)
-REPO_URL="https://raw.githubusercontent.com/sharath-am/testing-pre-commit/refs/heads/$GIT_VERSION"
+REPO_URL="https://raw.githubusercontent.com/your-username/your-config-repo/$GIT_VERSION"
 
 # Construct the path based on parameters
 CONFIG_PATH="$LANGUAGE/$CONFIG_FILE"
@@ -45,29 +45,33 @@ fi
 if [ -f "$CONFIG_FILE" ]; then
     echo "File $CONFIG_FILE already exists."
 
-    # Improved User Prompt - case-insensitive and default to No
-    read -p "Do you want to overwrite it? [y/N]: " choice
-    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')  # Convert to lowercase
+    # Download the file with a custom extension to avoid overwriting
+    CUSTOM_EXT=".new"
+    NEW_FILE="$CONFIG_FILE$CUSTOM_EXT"
 
-    if [[ "$choice" != "y" && "$choice" != "yes" ]]; then
-        echo "Aborting. No changes made."
-        exit 0
+    if [ "$VERBOSE" = true ]; then
+        echo "Downloading the file with a custom extension: $NEW_FILE"
     fi
-fi
 
-# Verbose mode message
-if [ "$VERBOSE" = true ]; then
-    echo "Fetching config file from: $FILE_URL"
-fi
+    if ! curl -fSL --max-time 10 "$FILE_URL" -o "$NEW_FILE"; then
+        echo "Error: Could not download the file from $FILE_URL."
+        echo "Please check the URL, repository, or version."
+        exit 1
+    fi
 
-# Fetch the config file with a 10-second timeout and error handling for missing file
-if ! curl -fSL --max-time 10 "$FILE_URL" -o "$CONFIG_FILE"; then
-    echo "Error: Could not download the file from $FILE_URL."
-    echo "Please check the URL, repository, or version."
-    exit 1
-fi
+    echo "Successfully downloaded $NEW_FILE."
+else
+    # Verbose mode message
+    if [ "$VERBOSE" = true ]; then
+        echo "Fetching config file from: $FILE_URL"
+    fi
 
-# Success message
-if [ "$VERBOSE" = true ]; then
+    # Fetch the config file with a 10-second timeout and error handling for missing file
+    if ! curl -fSL --max-time 10 "$FILE_URL" -o "$CONFIG_FILE"; then
+        echo "Error: Could not download the file from $FILE_URL."
+        echo "Please check the URL, repository, or version."
+        exit 1
+    fi
+
     echo "Successfully downloaded $CONFIG_FILE."
 fi
