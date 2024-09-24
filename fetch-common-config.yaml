@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Default to verbose mode
+VERBOSE=true
+DRY_RUN=false
+
+# Check for quiet (-q) or verbose (-v) flags
+while getopts ":vq" opt; do
+  case $opt in
+    v) VERBOSE=true ;;
+    q) VERBOSE=false ;;
+    *) echo "Usage: $0 [-v|-q] <programming-language> <config-file-name> <git-version>" >&2; exit 1 ;;
+  esac
+done
+
+shift $((OPTIND -1))
+
+# Check if the correct number of arguments are passed
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 [-v|-q] <programming-language> <config-file-name> <git-version>"
+    exit 1
+fi
+
+# Arguments
+LANGUAGE=$1          # Programming language (e.g., python, go)
+CONFIG_FILE=$2       # Config file name (e.g., pre-commit-config.yaml, golint.yaml)
+GIT_VERSION=${3:-main}  # Default Git version to "main" if not provided
+
+# GitHub repository containing the config files (replace with your actual repo)
+REPO_URL="https://raw.githubusercontent.com/sharath-am/testing-pre-commit/refs/heads/$GIT_VERSION"
+
+# Construct the path based on parameters
+CONFIG_PATH="$LANGUAGE/$CONFIG_FILE"
+
+# Full URL to the config file in the repo
+FILE_URL="$REPO_URL/$CONFIG_PATH"
+
+# Check for curl
+if ! command -v curl &> /dev/null; then
+    echo "Error: curl is not installed. Please install it to continue."
+    exit 1
+fi
+
+# Check if the file already exists locally
+if [ -f "$CONFIG_FILE" ]; then
+    echo "File $CONFIG_FILE already exists."
+
+    # Improved User Prompt - case-insensitive and default to No
+    read -p "Do you want to overwrite it? [y/N]: " choice
+    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')  # Convert to lowercase
+
+    if [[ "$choice" != "y" && "$choice" != "yes" ]]; then
+        echo "Aborting. No changes made."
+        exit 0
+    fi
+fi
+
+# Verbose mode message
+if [ "$VERBOSE" = true ]; then
+    echo "Fetching config file from: $FILE_URL"
+fi
+
+# Fetch the config file with a 10-second timeout and error handling for missing file
+if ! curl -fSL --max-time 10 "$FILE_URL" -o "$CONFIG_FILE"; then
+    echo "Error: Could not download the file from $FILE_URL."
+    echo "Please check the URL, repository, or version."
+    exit 1
+fi
+
+# Success message
+if [ "$VERBOSE" = true ]; then
+    echo "Successfully downloaded $CONFIG_FILE."
+fi
