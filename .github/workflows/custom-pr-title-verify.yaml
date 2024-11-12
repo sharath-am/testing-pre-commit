@@ -20,19 +20,10 @@ jobs:
             const pattern = new RegExp(process.env.CONVENTIONAL_COMMIT_REGEX);
             
             if (!pattern.test(title)) {
-              core.setFailed(`
-                PR title "${title}" does not match the required format.
-                
-                Expected format:
-                type(scope)?: subject
-                
-                Examples:
-                - feat: add new feature
-                - fix(auth): handle login error
-                - docs(readme): update installation steps
-                - style!: major styling changes
-                
-                Allowed types:
-                build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test
-              `);
+              core.setFailed(
+                '❌ PR title must follow convention:\n' +
+                '   <type>[optional scope]: <description>\n\n' +
+                '   Example: feat(auth): add login feature\n' +
+                '   📚 See conventionalcommits.org for more details'
+              );
             }
