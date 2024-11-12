@@ -1,0 +1,34 @@
+name: PR Title Check
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-pr-title:
+    name: Validate PR Title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Title
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const pattern = /^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\([\\w\\-\\.]+\))?(!)?: ([\\w ])+([\\s\\S]*)/;
+            
+            if (!pattern.test(title)) {
+              core.setFailed(`
+                PR title "${title}" does not match the required format.
+                
+                Expected format:
+                type(scope)?: subject
+                
+                Examples:
+                - feat: add new feature
+                - fix(auth): handle login error
+                - docs(readme): update installation steps
+                - style!: major styling changes
+                
+                Allowed types:
+                build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test
+              `);
+            }
