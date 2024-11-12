@@ -29,4 +29,4 @@ jobs:
           on-failed-regex-create-review: true
           on-failed-regex-request-changes: false
           on-failed-regex-comment: |
-            "PR title must follow conventional commit format - type(scope): description (e.g., feat(auth): add login). Cross verify the PR title with the regex ${{ env.CONVENTIONAL_COMMIT_REGEX }}. See conventionalcommits.org"
+            "❌ Invalid PR title! Required format: type(scope): description - e.g., feat(auth): add login. See conventionalcommits.org"
